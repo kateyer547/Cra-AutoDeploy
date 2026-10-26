@@ -51,6 +51,6 @@ just drift
 | `bin/cra-server` | assemblage, sous-commandes `serve`, `healthcheck`, `openapi` |
 | `web/` | front React (Vite, TanStack Query, Tailwind, Radix) |
 | `migrations/` | schéma SQLite |
-| `deploy/` | Compose et Caddy pour la VM Oracle |
+| `deploy/` | Compose, Caddy et tunnel Cloudflare pour le Raspberry Pi |
 
 Les conventions de travail sont dans `CLAUDE.md`.

@@ -139,14 +139,3 @@ jobs:
           done
           echo "La version attendue ($SHA) n'est pas servie par $URL" >&2
           exit 1
-      - name: Vérifier la démo
-        if: vars.DEMO_DOMAIN != ''
-        env:
-          URL: https://${{ vars.DEMO_DOMAIN }}/api/config
-        run: |
-          for i in $(seq 1 15); do
-            curl -fsS "$URL" | grep -q '"mode":"demo"' && exit 0
-            sleep 4
-          done
-          echo "La démo ne répond pas en mode demo sur $URL" >&2
-          exit 1

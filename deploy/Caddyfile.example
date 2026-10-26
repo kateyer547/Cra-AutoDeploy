@@ -1,7 +1,9 @@
-# Modèle : la copie réelle vit sur la VM (~/cra/Caddyfile), hors dépôt.
+# Modèle : la copie réelle vit sur le Pi (~/cra/Caddyfile), hors dépôt.
 # Remplacer les domaines et le hash (docker run --rm -it caddy:2 caddy hash-password).
+# Le préfixe http:// désactive le HTTPS automatique : Cloudflare termine le TLS,
+# le tunnel envoie le hostname vers http://caddy:80.
 
-monnom-cra.duckdns.org {
+http://cra.example.com {
     encode zstd gzip
 
     # En-têtes de sécurité, jusqu'à ce que l'application les émette (tranche 5, 17.7).
@@ -25,16 +27,4 @@ monnom-cra.duckdns.org {
         }
         reverse_proxy app:8080
     }
-}
-
-# Démonstration : autre sous-domaine, sans mot de passe, données fictives.
-monnom-cra-demo.duckdns.org {
-    encode zstd gzip
-    header {
-        Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'"
-        X-Content-Type-Options nosniff
-        Referrer-Policy no-referrer
-        -Server
-    }
-    reverse_proxy demo:8080
 }

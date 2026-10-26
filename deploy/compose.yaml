@@ -1,15 +1,24 @@
 services:
+  # Tunnel dédié à ce projet (distinct de celui d'une autre appli sur la machine) :
+  # connexion sortante uniquement, aucun port publié. Le hostname public se
+  # déclare dans Cloudflare Zero Trust et pointe vers http://caddy:80.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN:?définir TUNNEL_TOKEN dans .env}
+    depends_on: [caddy]
+
+  # TLS terminé par Cloudflare : Caddy ne sert plus qu'en HTTP interne
+  # (en-têtes de sécurité, authentification).
   caddy:
     image: caddy:2
     restart: unless-stopped
-    ports: ["80:80", "443:443"]
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data # certificats : à conserver
-      - caddy_config:/config
     depends_on:
       app: { condition: service_healthy }
-      demo: { condition: service_healthy }
 
   app:
     image: ghcr.io/${GITHUB_OWNER}/cra:${IMAGE_TAG:-latest}
@@ -29,26 +38,4 @@ services:
     logging:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }
-    # pas de "ports:" : l'appli n'est joignable que par Caddy
-
-  # Démonstration (4.5) : même image, aucun volume, aucun secret.
-  demo:
-    image: ghcr.io/${GITHUB_OWNER}/cra:${IMAGE_TAG:-latest}
-    restart: unless-stopped
-    environment:
-      - RUST_LOG=info
-      - APP_MODE=demo
-      - CRA_ALLOWED_ORIGINS=${DEMO_ORIGIN:-}
-    healthcheck:
-      test: ["CMD", "/app/cra-server", "healthcheck"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 10s
-    logging:
-      driver: json-file
-      options: { max-size: "10m", max-file: "3" }
-
-volumes:
-  caddy_data:
-  caddy_config:
+    # pas de "ports:" : l'appli n'est joignable que par Caddy, lui-même derrière le tunnel
