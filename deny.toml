@@ -4,6 +4,14 @@ all-features = false
 [advisories]
 version = 2
 yanked = "deny"
+# zip 8.x reste tiré par docx-rs 0.4.22 (dernière version) : ces alertes ne
+# visent que l'extraction d'archives ; le projet et docx-rs ne font qu'écrire.
+# À retirer dès qu'une version de docx-rs dépend de zip >= 9.
+ignore = [
+  { id = "RUSTSEC-2026-0367", reason = "extraction seulement ; zip 8 via docx-rs, écriture seule" },
+  { id = "RUSTSEC-2026-0368", reason = "extraction seulement ; zip 8 via docx-rs, écriture seule" },
+  { id = "RUSTSEC-2026-0369", reason = "extraction seulement ; zip 8 via docx-rs, écriture seule" },
+]
 
 [licenses]
 version = 2

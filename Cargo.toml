@@ -45,7 +45,7 @@ sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio",
 
 # Exports
 docx-rs = "0.4"
-zip = { version = "2", default-features = false, features = ["deflate"] }
+zip = { version = "9", default-features = false, features = ["deflate"] }
 csv = "1"
 
 # Tests
